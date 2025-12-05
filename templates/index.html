@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hesap Günü - Alman Usulü</title>
+    <style>
+        body { font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f4f4f9; }
+        .container { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        h1 { text-align: center; color: #333; }
+        .kisi-satir { display: flex; gap: 10px; margin-bottom: 10px; }
+        input { padding: 8px; border: 1px solid #ddd; border-radius: 4px; flex: 1; }
+       button {
+    padding: 10px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 100%;
+    font-size: 16px;
+    margin-bottom: 10px; /* <--- YENİ EKLEME: Altına 10px boşluk bırakır */
+}
+        button:hover { background-color: #218838; }
+        .sonuc-kutusu { margin-top: 20px; padding: 15px; background-color: #e9ecef; border-left: 5px solid #28a745; }
+        .hata { color: red; text-align: center; margin-bottom: 10px; }
+        .ekle-btn { background-color: #007bff; margin-bottom: 15px; }
+        .ekle-btn:hover { background-color: #0069d9; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>💸 Hesap Günü</h1>
+    
+    {% if hata %}
+        <div class="hata">{{ hata }}</div>
+    {% endif %}
+
+    <form method="POST">
+        <div id="kisi-listesi">
+            <div class="kisi-satir"><input type="text" name="isim[]" placeholder="İsim (Örn: Vedat)" required><input type="number" step="0.01" name="harcama[]" placeholder="Harcadığı Tutar (TL)" required></div>
+            <div class="kisi-satir"><input type="text" name="isim[]" placeholder="İsim (Örn: Fatih)"><input type="number" step="0.01" name="harcama[]" placeholder="Harcadığı Tutar (TL)"></div>
+            <div class="kisi-satir"><input type="text" name="isim[]" placeholder="İsim (Örn: Şahin)"><input type="number" step="0.01" name="harcama[]" placeholder="Harcadığı Tutar (TL)"></div>
+            <div class="kisi-satir"><input type="text" name="isim[]" placeholder="İsim (Örn: Yusuf)"><input type="number" step="0.01" name="harcama[]" placeholder="Harcadığı Tutar (TL)"></div>
+        </div>
+
+        <button type="button" class="ekle-btn" onclick="kisiEkle()">+ Kişi Ekle</button>
+        <button type="submit">HESAPLARI DENKLEŞTİR</button>
+        <button type="button" onclick="temizle()"> SIFIRLA </button>
+    </form>
+
+    {% if sonuclar %}
+    <div class="sonuc-kutusu">
+        <h3>Sonuçlar:</h3>
+        <ul>
+            {% for islem in sonuclar %}
+                <li>{{ islem }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+    function kisiEkle() {
+        var div = document.createElement("div");
+        div.className = "kisi-satir";
+        div.innerHTML = '<input type="text" name="isim[]" placeholder="İsim"><input type="number" step="0.01" name="harcama[]" placeholder="Harcadığı Tutar (TL)">';
+        document.getElementById("kisi-listesi").appendChild(div);
+    }
+function temizle() {
+    // 1. Önce kapsayıcı kutuyu (id="kisi-listesi") buluyoruz
+    var liste = document.getElementById("kisi-listesi");
+    
+    // 2. Bu kutunun içindeki tüm satırları (class="kisi-satir") topluyoruz
+    var satirlar = liste.getElementsByClassName("kisi-satir");
+
+    // 3. Döngüyle her satırı tek tek geziyoruz
+    for (var i = 0; i < satirlar.length; i++) {
+        // Her satırın içindeki input etiketlerini buluyoruz
+        var kutular = satirlar[i].getElementsByTagName("input");
+        
+        // kutular[0] -> İsim kutusu
+        // kutular[1] -> Harcama kutusu
+        
+        kutular[0].value = ""; // İsmi sil
+        
+        // Hata almamak için kontrol: O satırda 2. kutu var mı?
+        if (kutular[1]) {
+            kutular[1].value = ""; // Parayı sil
+        }
+    }
+}
+    
+</script>
+
+</body>
+</html>
